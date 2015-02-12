@@ -1,5 +1,6 @@
 import sqlite3
-from flask import Flask, render_template, g, redirect, url_for, flash, session, request, abort
+from flask import Flask, render_template, g, redirect,\
+    url_for, flash, session, request, abort
 
 DATABASE = "test.db"
 USERNAME = 'admin'
@@ -8,9 +9,11 @@ SECRET_KEY = 'this is a secret key'
 app = Flask(__name__)
 app.config.from_object(__name__)
 
+
 @app.route("/")
 def welcome():
-    return "<h1> Welcome to CMPUT 410 - Jinja Lab... </h1><br> <a href='/task'>Link to actual things</a>"
+    return "<h1>Welcome to CMPUT 410 - Jinja Lab</h1><br> \
+    <a href='/task'>Link to actual things</a>"
 
 
 @app.route("/task", methods=["GET", "POST"])
@@ -25,11 +28,15 @@ def task():
         flash("New task added 8-}")
         return redirect(url_for('task'))
 
-    return render_template("show_entries.html", tasks=query_db("select * from tasks"))
+    return render_template("show_entries.html",
+                           tasks=query_db("select * from tasks"))
+
 
 def addTask(category, priority, description):
-    query_db('insert into tasks values (null, ?, ?, ?)', [category, priority, description], one=True)
+    query_db('insert into tasks values (null, ?, ?, ?)',
+             [category, priority, description], one=True)
     get_db().commit()
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -58,11 +65,11 @@ def logout():
 def delete():
     if not session.get('logged_in'):
         abort(401)
-    # removetask(request.form['category'], request.form['priority'], request.form['description'])
     removetask(request.form['id'])
     print "DEL" + request.form["id"]
     flash("Task was deleted")
     return redirect(url_for('task'))
+
 
 def removetask(id):
     query_db('delete from tasks where id = ?', [id], one=True)
